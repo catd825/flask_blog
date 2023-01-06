@@ -1,5 +1,5 @@
 import sqlite3
-from flask import Flask, render_template
+from flask import Flask, render_template, request, url_for, flash, redirect
 from werkzeug.exceptions import abort
 
 def get_db_connection():
@@ -17,7 +17,9 @@ def get_post(post_id):
     return post
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'uw4huafif8haew'
 
+# displays all
 @app.route('/')
 def index():
     conn = get_db_connection()
@@ -25,7 +27,27 @@ def index():
     conn.close()
     return render_template('index.html', posts=posts)
 
+# displays single
 @app.route('/<int:post_id>')
 def post(post_id):
     post = get_post(post_id)
     return render_template('post.html', post=post)
+
+# create form / create new endpoint
+@app.route('/create', methods=('GET', 'POST'))
+def create():
+    if request.method == 'POST':
+        title = request.form['title']
+        content = request.form['content']
+        
+        if not title:
+            flash('title is required!')
+        else:
+            conn = get_db_connection()
+            conn.execute('INSERT INTO posts (title, content) VALUES (?, ?)',
+                         (title, content))
+            conn.commit()
+            conn.close()
+            return redirect(url_for('index'))
+        
+    return render_template('create.html')
