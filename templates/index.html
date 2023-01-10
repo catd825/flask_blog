@@ -2,14 +2,16 @@
 
 {% block content %}
     <h1>{% block title %} Welcome to FlaskBlog {% endblock %}</h1>
-    {% for post in posts %}
-        <a href="{{ url_for('post', post_id=post['id']) }}">
-            <h2>{{ post['title'] }}{{ post['id'] }}</h2>
-        </a>
-        <span class="badge badge-primary">{{ post['created'] }}</span>
-        <a href="{{ url_for('edit', id=post['id']) }}">
-            <span class="badge badge-warning">Edit</span>
-        </a>
-        <hr>
-    {% endfor %}
+    {% for post, comments in posts.items() %}
+    <div class="card" style="width: 18rem; margin-bottom: 50px;">
+        <div class="card-header">
+            <h3>{{ post }}</h3>
+        </div>
+        <ul class="list-group list-group-flush">
+            {% for comment in comments %}
+                <li class="list-group-item">{{ comment['comment_text'] }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endfor %}
 {% endblock %}
