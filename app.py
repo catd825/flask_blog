@@ -24,14 +24,14 @@ app.config['SECRET_KEY'] = 'uw4huafif8haew'
 @app.route('/')
 def index():
     conn = get_db_connection()
-    post_groups = conn.execute("SELECT p.title, p.content, IFNULL(c.content, 'no posts yet!') AS comment_text FROM posts as \
+    post_comments = conn.execute("SELECT p.title, p.content, IFNULL(c.content, 'no posts yet!') AS comment_text FROM posts as \
                          p LEFT JOIN comments as c ON c.post_id = p.id").fetchall()
     
     posts = {}
     
-    for k, g in groupby(post_groups, key=lambda t: t['title']):
+    for k, g in groupby(post_comments, key=lambda t: t['title']):
         posts[k] = list(g)
-        
+
     conn.close()
     return render_template('index.html', posts=posts)
 
